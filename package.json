@@ -1,0 +1,30 @@
+{
+  "name": "@noravel/validation",
+  "version": "1.0.0",
+  "description": "Noravel validation",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest",
+    "test:coverage": "jest --verbose --coverage",
+    "prettier:check": "prettier --ignore-path .prettierignore --check '**/*.{js,ts,json,md}'",
+    "prettier:fix": "prettier --ignore-path .prettierignore --write '**/*.{js,ts,json,md}'"
+  },
+  "files": [
+    "dist"
+  ],
+  "prepare": "npm run build",
+  "keywords": [
+    "noravel",
+    "validation"
+  ],
+  "author": "Trịnh Trần Phương Nam <ttpn18121996@gmail.com>",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^22.13.11",
+    "jest": "^29.7.0",
+    "prettier": "^3.5.3",
+    "typescript": "^5.8.2"
+  }
+}

@@ -1,0 +1,30 @@
+name: Check code format
+
+on:
+  pull_request:
+    branches-ignore:
+      - 'master'
+      - 'main'
+      - 'releases/**'
+  push:
+    branches:
+      - 'v*'
+
+jobs:
+  check_code_formatting:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 'Checkout the code'
+        uses: actions/checkout@v4
+
+      - name: 'Install npm dependencies'
+        run: npm ci
+
+      - name: 'Run test'
+        run: npm run prettier:fix
+
+      - name: 'Commit linted files'
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: 'Fixes coding style'
