@@ -10,6 +10,12 @@ export default class ValidationRule {
     this.type = 'string';
   }
 
+  /**
+   * Add an email validation rule.
+   *
+   * @param {string} message
+   * @returns {this}
+   */
   public email(message?: string): this {
     this.rules.email = {
       value: true,
@@ -20,6 +26,13 @@ export default class ValidationRule {
     return this;
   }
 
+  /**
+   * Add an in validation rule.
+   *
+   * @param {string[] | number[]} values
+   * @param {string} message
+   * @returns {this}
+   */
   public in(values: string[] | number[], message?: string): this {
     this.rules.in = {
       value: values,
@@ -30,6 +43,13 @@ export default class ValidationRule {
     return this;
   }
 
+  /**
+   * Add a max validation rule.
+   *
+   * @param {number} max
+   * @param {string} message
+   * @returns {this}
+   */
   public max(max: number, message?: string): this {
     message = message ?? `The :attribute field must not have more than`;
 
@@ -57,6 +77,13 @@ export default class ValidationRule {
     return this;
   }
 
+  /**
+   * Add a min validation rule.
+   *
+   * @param {number} min
+   * @param {string} message
+   * @returns {this}
+   */
   public min(min: number, message?: string): this {
     message = message ?? `The :attribute field must be at least`;
 
@@ -84,6 +111,11 @@ export default class ValidationRule {
     return this;
   }
 
+  /**
+   * Add a nullable validation rule.
+   *
+   * @returns {this}
+   */
   public nullable(): this {
     if (this.rules?.required) {
       delete this.rules.required;
@@ -109,6 +141,13 @@ export default class ValidationRule {
     return this;
   }
 
+  /**
+   * Add a regex validation rule.
+   *
+   * @param {RegExp} pattern
+   * @param {string} message
+   * @returns {this}
+   */
   public regex(pattern: RegExp, message?: string): this {
     this.rules.regex = {
       value: pattern,
@@ -119,6 +158,12 @@ export default class ValidationRule {
     return this;
   }
 
+  /**
+   * Add a required validation rule.
+   *
+   * @param {string} message
+   * @returns {this}
+   */
   public required(message?: string): this {
     this.rules.required = {
       value: true,
@@ -128,24 +173,12 @@ export default class ValidationRule {
     return this;
   }
 
-  public serialize(): Record<string, Validatable> {
-    return this.rules;
-  }
-
-  public getName(): string {
-    return this.name ?? '';
-  }
-
-  public setName(name: string): this {
-    this.name = name;
-
-    return this;
-  }
-
-  public formatMessage(message: string): string {
-    return message.replace(':attribute', this.name ?? '');
-  }
-
+  /**
+   * Add a string validation rule.
+   *
+   * @param {string} message
+   * @returns {this}
+   */
   public string(message?: string): this {
     this.type = 'string';
 
@@ -156,5 +189,45 @@ export default class ValidationRule {
     };
 
     return this;
+  }
+
+  /**
+   * Serialize the validation rules.
+   *
+   * @returns {Record<string, Validatable>}
+   */
+  public serialize(): Record<string, Validatable> {
+    return this.rules;
+  }
+
+  /**
+   * Get the name of the validation rule.
+   *
+   * @returns {string}
+   */
+  public getName(): string {
+    return this.name ?? '';
+  }
+
+  /**
+   * Set the name of the validation rule.
+   *
+   * @param {string} name
+   * @returns {this}
+   */
+  public setName(name: string): this {
+    this.name = name;
+
+    return this;
+  }
+
+  /**
+   * Format the validation message.
+   *
+   * @param {string} message
+   * @returns {string}
+   */
+  public formatMessage(message: string): string {
+    return message.replace(':attribute', this.name ?? '');
   }
 }

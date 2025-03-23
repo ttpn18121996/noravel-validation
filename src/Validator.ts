@@ -11,6 +11,12 @@ export default class Validator {
     this.data = {};
   }
 
+  /**
+   * Validate the given data.
+   *
+   * @param {Record<string, any>} data
+   * @returns {this}
+   */
   public validate(data?: Record<string, any>): this {
     if (data) {
       this.setData(data);
@@ -45,27 +51,60 @@ export default class Validator {
     return this;
   }
 
+  /**
+   * Determine if the validation rule is nullable.
+   *
+   * @param {Record<string, Validatable>} rules
+   * @param {string} attribute
+   * @returns {boolean}
+   */
   protected isNullIfMarkedAsNullable(rules: Record<string, Validatable>, attribute: string): boolean {
     return 'nullable' in rules && !ValidateAttribute.required(attribute, this.data[attribute]);
   }
 
+  /**
+   * Determine if the validation passed.
+   *
+   * @returns {boolean}
+   */
   public passes(): boolean {
     return Object.keys(this.messages).length === 0;
   }
 
+  /**
+   * Determine if the validation failed.
+   *
+   * @returns {boolean}
+   */
   public fails(): boolean {
     return !this.passes();
   }
 
+  /**
+   * Set the data to validate.
+   *
+   * @param {Record<string, any>} data
+   * @returns {this}
+   */
   public setData(data: Record<string, any>): this {
     this.data = data;
     return this;
   }
 
+  /**
+   * Get the data to validate.
+   *
+   * @returns {Record<string, any>}
+   */
   public getData(): Record<string, any> {
     return this.data;
   }
 
+  /**
+   * Get the validation messages.
+   *
+   * @returns {Record<string, string[]>}
+   */
   public getMessages(): Record<string, string[]> {
     return this.messages;
   }
