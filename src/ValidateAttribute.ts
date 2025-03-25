@@ -49,8 +49,12 @@ export default class ValidateAttribute {
    * @returns {boolean}
    */
   public static max(name: string, value: any, max: number, type: string): boolean {
-    if (type === 'string' || Array.isArray(value)) {
-      return value.length <= max;
+    if (type === 'string' || type === 'array') {
+      if (typeof value === 'string' && Array.isArray(value)) {
+        return value.length <= max;
+      }
+
+      return false;
     } else if (type === 'number') {
       return value <= max;
     }
@@ -68,8 +72,12 @@ export default class ValidateAttribute {
    * @returns {boolean}
    */
   public static min(name: string, value: any, min: number, type: string): boolean {
-    if (type === 'string' || Array.isArray(value)) {
-      return value.length >= min;
+    if (type === 'string' || type === 'array') {
+      if (typeof value === 'string' && Array.isArray(value)) {
+        return value.length >= min;
+      }
+
+      return false;
     } else if (type === 'number') {
       return value >= min;
     }
@@ -96,11 +104,7 @@ export default class ValidateAttribute {
    * @returns {boolean}
    */
   public static numeric(name: string, value: any): boolean {
-    if (typeof value !== 'number') {
-      return false;
-    }
-
-    return true;
+    return typeof value === 'number' || (!isNaN(value) && !isNaN(parseFloat(value)));
   }
 
   /**
