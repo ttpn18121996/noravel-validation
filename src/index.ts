@@ -1,6 +1,7 @@
-import ValidationRule from './ValidationRule';
-import Validator from './Validator';
 import CustomRule from './CustomRule';
+import ValidateAttribute from './ValidateAttribute';
+import RuleRegistration from './RuleRegistration';
+import Validator from './Validator';
 
 class ValidationFactory {
   /**
@@ -10,9 +11,13 @@ class ValidationFactory {
    * @returns {Validator}
    */
   static make(
-    callback: (rule: (name?: string) => ValidationRule) => Record<string, ValidationRule | CustomRule>,
+    data: Record<string, any>,
+    callback: (rule: (name?: string) => RuleRegistration) => Record<string, RuleRegistration | CustomRule>,
   ): Validator {
-    return new Validator(callback(() => new ValidationRule()));
+    const validator = new Validator(callback(() => new RuleRegistration()));
+    validator.setData(data);
+
+    return validator;
   }
 
   /**
@@ -21,11 +26,9 @@ class ValidationFactory {
    * @param {function} passes
    * @returns {CustomRule}
    */
-  static makeRule(
-    passes: (attribute: string, value: any, fail: (message: string) => void) => void,
-  ): CustomRule {
+  static makeRule(passes: (attribute: string, value: any, fail: (message: string) => void) => void): CustomRule {
     return new CustomRule(passes);
   }
 }
 
-export { ValidationFactory };
+export { ValidationFactory, Validator, RuleRegistration, CustomRule, ValidateAttribute };

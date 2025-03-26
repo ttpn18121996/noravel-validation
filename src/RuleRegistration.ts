@@ -1,7 +1,16 @@
-import { FieldType, Validatable } from './Validatable';
+import { FieldType, Validatable } from './Contracts/Validatable';
+import MinRule from './Rules/MinRule';
+import { ValidationRule } from './Contracts/ValidationRule';
+import MaxRule from './Rules/MaxRule';
+import RequiredRule from './Rules/RequiredRule';
+import EmailRule from './Rules/EmailRule';
+import NumericRule from './Rules/NumericRule';
+import RegexRule from './Rules/RegexRule';
+import StringRule from './Rules/StringRule';
+import InRule from './Rules/InRule';
 
-export default class ValidationRule {
-  private rules: Record<string, Validatable>;
+export default class RuleRegistration {
+  private rules: Record<string, Validatable | ValidationRule>;
 
   private type: FieldType;
 
@@ -17,11 +26,10 @@ export default class ValidationRule {
    * @returns {this}
    */
   public email(message?: string): this {
-    this.rules.email = {
-      value: true,
-      message: message ?? `The :attribute field must be a valid email address.`,
-      type: this.type,
-    };
+    const emailRule = new EmailRule();
+    emailRule.setMessage(message);
+
+    this.rules.email = emailRule;
 
     return this;
   }
@@ -34,11 +42,10 @@ export default class ValidationRule {
    * @returns {this}
    */
   public in(values: string[] | number[], message?: string): this {
-    this.rules.in = {
-      value: values,
-      message: message ?? `The selected :attribute is invalid.`,
-      type: this.type,
-    };
+    const inRule = new InRule(values);
+    inRule.setMessage(message);
+
+    this.rules.in = inRule;
 
     return this;
   }
@@ -51,28 +58,10 @@ export default class ValidationRule {
    * @returns {this}
    */
   public max(max: number, message?: string): this {
-    message = message ?? `The :attribute field must not have more than`;
+    const maxRule = new MaxRule(max, this.type);
+    maxRule.setMessage(message);
 
-    switch (this.type) {
-      case 'array':
-        message += ` ${max} items.`;
-        break;
-      case 'number':
-        message += ` ${max}.`;
-        break;
-      case 'string':
-        message += ` ${max} characters.`;
-        break;
-      default:
-        message += ` ${max}.`;
-        break;
-    }
-
-    this.rules.max = {
-      value: max,
-      message,
-      type: this.type,
-    };
+    this.rules.max = maxRule;
 
     return this;
   }
@@ -85,28 +74,10 @@ export default class ValidationRule {
    * @returns {this}
    */
   public min(min: number, message?: string): this {
-    message = message ?? `The :attribute field must be at least`;
+    const minRule = new MinRule(min, this.type);
+    minRule.setMessage(message);
 
-    switch (this.type) {
-      case 'array':
-        message += ` ${min} items.`;
-        break;
-      case 'number':
-        message += ` ${min}.`;
-        break;
-      case 'string':
-        message += ` ${min} characters.`;
-        break;
-      default:
-        message += ` ${min}.`;
-        break;
-    }
-
-    this.rules.min = {
-      value: min,
-      message,
-      type: this.type,
-    };
+    this.rules.min = minRule;
 
     return this;
   }
@@ -132,11 +103,10 @@ export default class ValidationRule {
   public numeric(message?: string): this {
     this.type = 'number';
 
-    this.rules.numeric = {
-      value: true,
-      message: message ?? `The :attribute field must be a number`,
-      type: this.type,
-    };
+    const numericRule = new NumericRule();
+    numericRule.setMessage(message);
+
+    this.rules.numeric = numericRule;
 
     return this;
   }
@@ -149,11 +119,10 @@ export default class ValidationRule {
    * @returns {this}
    */
   public regex(pattern: RegExp, message?: string): this {
-    this.rules.regex = {
-      value: pattern,
-      message: message ?? `The :attribute field format is invalid.`,
-      type: this.type,
-    };
+    const regexRule = new RegexRule(pattern);
+    regexRule.setMessage(message);
+
+    this.rules.regex = regexRule;
 
     return this;
   }
@@ -165,10 +134,10 @@ export default class ValidationRule {
    * @returns {this}
    */
   public required(message?: string): this {
-    this.rules.required = {
-      value: true,
-      message: message ?? `The :attribute field is required`,
-    };
+    const requiredRule = new RequiredRule();
+    requiredRule.setMessage(message);
+
+    this.rules.required = requiredRule;
 
     return this;
   }
@@ -182,11 +151,10 @@ export default class ValidationRule {
   public string(message?: string): this {
     this.type = 'string';
 
-    this.rules.string = {
-      value: true,
-      message: message ?? `The :attribute field must be a string`,
-      type: this.type,
-    };
+    const stringRule = new StringRule();
+    stringRule.setMessage(message);
+
+    this.rules.string = stringRule;
 
     return this;
   }
@@ -196,7 +164,7 @@ export default class ValidationRule {
    *
    * @returns {Record<string, Validatable>}
    */
-  public serialize(): Record<string, Validatable> {
+  public serialize(): Record<string, Validatable | ValidationRule> {
     return this.rules;
   }
 

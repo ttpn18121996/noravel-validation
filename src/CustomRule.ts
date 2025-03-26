@@ -1,9 +1,7 @@
 export default class CustomRule {
   protected message?: string;
 
-  public constructor(
-    protected passes: (attribute: string, value: any, fail: (message: string) => void) => void,
-  ) {}
+  public constructor(protected passes: (attribute: string, value: any, fail: (message: string) => void) => void) {}
 
   public validate(attribute: string, value: any): this {
     this.message = undefined;
