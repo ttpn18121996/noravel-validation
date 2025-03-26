@@ -12,7 +12,7 @@ export default class StringRule implements ValidationRule {
   }
 
   public getMessage(attribute: string): string {
-    return this.message ? this.message : `The selected ${attribute} is invalid.`;
+    return this.message ? this.message.replace(':attribute', attribute) : `The selected ${attribute} is invalid.`;
   }
 
   public validate(attribute: string, value: any, fail: (message: string) => void): void {

@@ -1,8 +1,8 @@
-import { Validatable } from './Contracts/Validatable';
-import ValidateAttribute, { ValidateAttributeMethod } from './ValidateAttribute';
 import RuleRegistration from './RuleRegistration';
-import CustomRule from './CustomRule';
+import CustomRule from './Rules/CustomRule';
 import { ValidationRule } from './Contracts/ValidationRule';
+import { _col, _obj } from '@noravel/supporter';
+import ValidationException from './ValidationException';
 
 export default class Validator {
   protected messages: Record<string, string[]>;
@@ -22,16 +22,21 @@ export default class Validator {
    */
   public validate(): Record<string, any> | undefined {
     if (this.fails()) {
-      return undefined;
+      throw new ValidationException(this.getMessage());
     }
 
     return this.validated();
   }
 
-  public validated() {
+  /**
+   * Get the validated data.
+   *
+   * @returns {Record<string, any>}
+   */
+  public validated(): Record<string, any> {
     this.passes();
 
-    return this.validData;
+    return this.getValidatedData();
   }
 
   /**
@@ -60,30 +65,7 @@ export default class Validator {
             validationRule.validate(attribute, this.data[attribute], (message: string) => {
               this.pushMessage(attribute, message);
             });
-
-            continue;
           }
-
-          const validateMethod = ValidateAttribute[rule as keyof typeof ValidateAttribute] as ValidateAttributeMethod;
-
-          const validatable = rules[rule] as Validatable;
-
-          if (
-            typeof validateMethod === 'function' &&
-            !validateMethod(attribute, this.data[attribute], validatable.value, validatable.type)
-          ) {
-            this.pushMessage(attribute, validationRule.formatMessage(validatable.message));
-          } else {
-            this.validData[attribute] = this.data[attribute];
-          }
-        }
-      } else if (validationRule instanceof CustomRule) {
-        const validated = validationRule.validate(attribute, this.data[attribute]);
-
-        if (validated.fails()) {
-          this.pushMessage(attribute, validated.getMessage());
-        } else {
-          this.validData[attribute] = this.data[attribute];
         }
       } else if (this.isValidationRule(validationRule)) {
         (validationRule as ValidationRule).validate(attribute, this.data[attribute], (message: string) => {
@@ -95,6 +77,12 @@ export default class Validator {
     return Object.keys(this.messages).length === 0;
   }
 
+  /**
+   * Determine if the given rule is a validation rule.
+   *
+   * @param {any} rule
+   * @returns {boolean}
+   */
   protected isValidationRule(rule: any): boolean {
     return 'validate' in rule;
   }
@@ -102,12 +90,18 @@ export default class Validator {
   /**
    * Determine if the validation rule is nullable.
    *
-   * @param {Record<string, Validatable | ValidationRule>} rules
+   * @param {Record<string, ValidationRule>} rules
    * @param {string} attribute
    * @returns {boolean}
    */
-  protected isNullIfMarkedAsNullable(rules: Record<string, Validatable | ValidationRule>, attribute: string): boolean {
-    return 'nullable' in rules && !ValidateAttribute.required(attribute, this.data[attribute]);
+  protected isNullIfMarkedAsNullable(rules: Record<string, ValidationRule>, attribute: string): boolean {
+    return (
+      'nullable' in rules &&
+      (this.data[attribute] === null ||
+        this.data[attribute] === undefined ||
+        (typeof this.data[attribute] === 'string' && this.data[attribute].trim().length === 0) ||
+        (Array.isArray(this.data[attribute]) && this.data[attribute].length === 0))
+    );
   }
 
   /**
@@ -138,6 +132,19 @@ export default class Validator {
    */
   public getData(): Record<string, any> {
     return this.data;
+  }
+
+  /**
+   * Get the validated data.
+   *
+   * @returns {Record<string, any>}
+   */
+  public getValidatedData(): Record<string, any> {
+    const validateKey = Object.keys(this.rules);
+    const messageKey = Object.keys(this.messages);
+    this.validData = _obj.only(this.data, _col(validateKey).diff(messageKey).all() as string[]);
+
+    return this.validData;
   }
 
   /**

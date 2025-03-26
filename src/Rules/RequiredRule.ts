@@ -10,7 +10,7 @@ export default class RequiredRule implements ValidationRule {
   }
 
   public getMessage(attribute: string): string {
-    return this.message ? this.message : `The ${attribute} field is required`;
+    return this.message ? this.message.replace(':attribute', attribute) : `The ${attribute} field is required`;
   }
 
   public validate(attribute: string, value: any, fail: (message: string) => void): void {

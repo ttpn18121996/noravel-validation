@@ -1,4 +1,4 @@
-import { FieldType, Validatable } from './Contracts/Validatable';
+import { FieldType } from './Contracts/Validatable';
 import MinRule from './Rules/MinRule';
 import { ValidationRule } from './Contracts/ValidationRule';
 import MaxRule from './Rules/MaxRule';
@@ -8,15 +8,33 @@ import NumericRule from './Rules/NumericRule';
 import RegexRule from './Rules/RegexRule';
 import StringRule from './Rules/StringRule';
 import InRule from './Rules/InRule';
+import CustomRule from './Rules/CustomRule';
+import ArrayRule from './Rules/ArrayRule';
 
 export default class RuleRegistration {
-  private rules: Record<string, Validatable | ValidationRule>;
+  private rules: Record<string, ValidationRule>;
 
   private type: FieldType;
 
   public constructor(private name?: string) {
     this.rules = {};
     this.type = 'string';
+  }
+
+  /**
+   * Add a nullable validation rule.
+   *
+   * @returns {this}
+   */
+  public array(message?: string): this {
+    this.type = 'array';
+
+    const arrayRule = new ArrayRule();
+    arrayRule.setMessage(message);
+
+    this.rules.array = arrayRule;
+
+    return this;
   }
 
   /**
@@ -92,10 +110,7 @@ export default class RuleRegistration {
       delete this.rules.required;
     }
 
-    this.rules.nullable = {
-      value: true,
-      message: '',
-    };
+    this.rules.nullable = new CustomRule((attribute: string, value: any, fail: (message: string) => void) => {});
 
     return this;
   }
@@ -162,9 +177,9 @@ export default class RuleRegistration {
   /**
    * Serialize the validation rules.
    *
-   * @returns {Record<string, Validatable>}
+   * @returns {Record<string, ValidationRule>}
    */
-  public serialize(): Record<string, Validatable | ValidationRule> {
+  public serialize(): Record<string, ValidationRule> {
     return this.rules;
   }
 

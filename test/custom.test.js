@@ -7,22 +7,39 @@ test('it can make a custom rule', () => {
     }
   });
 
-  const validator = ValidationFactory.make(_ => ({
-    status: CustomRule,
-  }));
+  const expected = () => {
+    ValidationFactory.make(
+      _ => ({
+        status: CustomRule,
+      }),
+      {
+        status: 'failed',
+      },
+    ).validate();
+  };
 
-  validator.validate({
-    status: 'failed',
-  });
+  expect(expected).toThrow('The status field must not be failed.');
+});
 
-  expect(validator.getMessages()).toEqual({
-    status: ['The status field must not be failed.'],
-  });
-  expect(validator.getMessage()).toEqual('The status field must not be failed.');
+test('it can make a custom class', () => {
+  class PhoneRule {
+    validate(attribute, value, fail) {
+      if (!/^\d{10}$/.test(value)) {
+        fail(`The ${attribute} must be 10 digits`);
+      }
+    }
+  }
 
-  validator.validate({
-    status: 'passed',
-  });
+  const expected = () => {
+    ValidationFactory.make(
+      _ => ({
+        phone: new PhoneRule(),
+      }),
+      {
+        phone: 'wrong phone number',
+      },
+    ).validate();
+  };
 
-  expect(validator.passes()).toBeTruthy();
+  expect(expected).toThrow('The phone must be 10 digits');
 });

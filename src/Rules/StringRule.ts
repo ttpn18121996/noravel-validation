@@ -10,7 +10,7 @@ export default class StringRule implements ValidationRule {
   }
 
   public getMessage(attribute: string): string {
-    return this.message ? this.message : `The ${attribute} field must be a string.`;
+    return this.message ? this.message.replace(':attribute', attribute) : `The ${attribute} field must be a string.`;
   }
 
   public validate(attribute: string, value: any, fail: (message: string) => void): void {

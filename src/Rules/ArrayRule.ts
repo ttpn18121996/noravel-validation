@@ -1,9 +1,7 @@
 import { ValidationRule } from '../Contracts/ValidationRule';
 
-export default class RegexRule implements ValidationRule {
+export default class ArrayRule implements ValidationRule {
   protected message?: string;
-
-  public constructor(protected pattern: RegExp) {}
 
   public setMessage(message?: string): this {
     this.message = message;
@@ -12,13 +10,11 @@ export default class RegexRule implements ValidationRule {
   }
 
   public getMessage(attribute: string): string {
-    return this.message ? this.message.replace(':attribute', attribute) : `The ${attribute} field format is invalid.`;
+    return this.message ? this.message.replace(':attribute', attribute) : `The ${attribute} must be an array.`;
   }
 
   public validate(attribute: string, value: any, fail: (message: string) => void): void {
-    value = String(value);
-
-    if (!this.pattern.test(value)) {
+    if (!Array.isArray(value)) {
       fail(this.getMessage(attribute));
     }
   }
