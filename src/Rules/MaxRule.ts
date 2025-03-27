@@ -16,6 +16,8 @@ export default class MaxRule implements ValidationRule {
   }
 
   public getMessage(attribute: string): string {
+    attribute = attribute.replace('_', ' ');
+
     if (this.message) return this.message.replace(':attribute', attribute);
 
     let message = `The ${attribute} field must not have more than`;

@@ -12,6 +12,8 @@ export default class RegexRule implements ValidationRule {
   }
 
   public getMessage(attribute: string): string {
+    attribute = attribute.replace('_', ' ');
+
     return this.message ? this.message.replace(':attribute', attribute) : `The ${attribute} field format is invalid.`;
   }
 

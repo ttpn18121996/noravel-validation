@@ -5,12 +5,11 @@ import { _col, _obj } from '@noravel/supporter';
 import ValidationException from './ValidationException';
 
 export default class Validator {
-  protected messages: Record<string, string[]>;
+  protected messages?: Record<string, string[]>;
   public data: Record<string, any>;
   public validData: Record<string, any>;
 
   public constructor(public rules: Record<string, RuleRegistration | CustomRule>) {
-    this.messages = {};
     this.data = {};
     this.validData = {};
   }
@@ -34,7 +33,9 @@ export default class Validator {
    * @returns {Record<string, any>}
    */
   public validated(): Record<string, any> {
-    this.passes();
+    if (!this.messages) {
+      this.passes();
+    }
 
     return this.getValidatedData();
   }
@@ -114,6 +115,35 @@ export default class Validator {
   }
 
   /**
+   * Get the valid attributes.
+   *
+   * @returns {string[]}
+   */
+  public valid(): string[] {
+    if (!this.messages) {
+      this.passes();
+    }
+
+    const validateKey = Object.keys(this.rules);
+    const messageKey = Object.keys(this.messages ?? {});
+
+    return _col<string>(validateKey).diff(messageKey).all() as string[];
+  }
+
+  /**
+   * Get the invalid attributes.
+   *
+   * @returns {string[]}
+   */
+  public invalid(): string[] {
+    if (!this.messages) {
+      this.passes();
+    }
+
+    return Object.keys(this.messages ?? {});
+  }
+
+  /**
    * Set the data to validate.
    *
    * @param {Record<string, any>} data
@@ -140,9 +170,7 @@ export default class Validator {
    * @returns {Record<string, any>}
    */
   public getValidatedData(): Record<string, any> {
-    const validateKey = Object.keys(this.rules);
-    const messageKey = Object.keys(this.messages);
-    this.validData = _obj.only(this.data, _col(validateKey).diff(messageKey).all() as string[]);
+    this.validData = _obj.only(this.data, this.valid());
 
     return this.validData;
   }
@@ -155,6 +183,10 @@ export default class Validator {
    * @returns {void}
    */
   public pushMessage(attribute: string, message: string): void {
+    if (!this.messages) {
+      this.messages = {};
+    }
+
     if (!this.messages[attribute]) {
       this.messages[attribute] = [];
     }
@@ -168,7 +200,7 @@ export default class Validator {
    * @returns {Record<string, string[]>}
    */
   public getMessages(): Record<string, string[]> {
-    return this.messages;
+    return this.messages ?? {};
   }
 
   /**

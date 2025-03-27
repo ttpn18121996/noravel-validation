@@ -10,6 +10,8 @@ export default class EmailRule implements ValidationRule {
   }
 
   public getMessage(attribute: string): string {
+    attribute = attribute.replace('_', ' ');
+
     return this.message
       ? this.message.replace(':attribute', attribute)
       : `The ${attribute} field must be a valid email address.`;

@@ -1,4 +1,5 @@
 import { ValidationRule } from '../Contracts/ValidationRule';
+import { _str } from '@noravel/supporter';
 
 export default class RequiredRule implements ValidationRule {
   protected message?: string;
@@ -10,7 +11,9 @@ export default class RequiredRule implements ValidationRule {
   }
 
   public getMessage(attribute: string): string {
-    return this.message ? this.message.replace(':attribute', attribute) : `The ${attribute} field is required`;
+    attribute = attribute.replace('_', ' ');
+
+    return this.message ? this.message.replace(':attribute', attribute) : `The ${attribute} field is required.`;
   }
 
   public validate(attribute: string, value: any, fail: (message: string) => void): void {
