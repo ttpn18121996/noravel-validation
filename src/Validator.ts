@@ -3,6 +3,7 @@ import CustomRule from './Rules/CustomRule';
 import { ValidationRule } from './Contracts/ValidationRule';
 import { _col, _obj } from '@noravel/supporter';
 import ValidationException from './ValidationException';
+import Rule from './Rules/ValidationRule';
 
 export default class Validator {
   protected messages?: Record<string, string[]>;
@@ -52,8 +53,6 @@ export default class Validator {
       const validationRule: RuleRegistration | CustomRule = this.rules[attribute];
 
       if (validationRule instanceof RuleRegistration) {
-        validationRule.setName(attribute);
-
         const rules = validationRule.serialize();
         for (const rule in rules) {
           if (this.isNullIfMarkedAsNullable(rules, attribute)) {
@@ -85,7 +84,7 @@ export default class Validator {
    * @returns {boolean}
    */
   protected isValidationRule(rule: any): boolean {
-    return 'validate' in rule;
+    return rule instanceof Rule || 'validate' in rule;
   }
 
   /**
@@ -201,6 +200,15 @@ export default class Validator {
    */
   public getMessages(): Record<string, string[]> {
     return this.messages ?? {};
+  }
+
+  /**
+   * An alias of getMessages.
+   *
+   * @returns {Record<string, string[]>}
+   */
+  public errors(): Record<string, string[]> {
+    return this.getMessages();
   }
 
   /**

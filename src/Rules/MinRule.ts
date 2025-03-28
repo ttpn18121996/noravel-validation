@@ -1,25 +1,15 @@
+import ValidationRule from './ValidationRule';
 import { FieldType } from '../Contracts/Validatable';
-import { ValidationRule } from '../Contracts/ValidationRule';
 
-export default class MinRule implements ValidationRule {
-  protected message?: string;
-
+export default class MinRule extends ValidationRule {
   public constructor(
     protected value: number,
     protected type: FieldType = 'string',
-  ) {}
-
-  public setMessage(message?: string): this {
-    this.message = message;
-
-    return this;
+  ) {
+    super();
   }
 
   public getMessage(attribute: string): string {
-    attribute = attribute.replace('_', ' ');
-
-    if (this.message) return this.message.replace(':attribute', attribute);
-
     let message = `The ${attribute} field must be at least`;
 
     switch (this.type) {
@@ -37,7 +27,7 @@ export default class MinRule implements ValidationRule {
         break;
     }
 
-    return message;
+    return this.formatMessage(attribute, message);
   }
 
   public validate(attribute: string, value: any, fail: (message: string) => void): void {

@@ -1,20 +1,12 @@
-import { ValidationRule } from '../Contracts/ValidationRule';
+import ValidationRule from './ValidationRule';
 
-export default class RegexRule implements ValidationRule {
-  protected message?: string;
-
-  public constructor(protected pattern: RegExp) {}
-
-  public setMessage(message?: string): this {
-    this.message = message;
-
-    return this;
+export default class RegexRule extends ValidationRule {
+  public constructor(protected pattern: RegExp) {
+    super();
   }
 
   public getMessage(attribute: string): string {
-    attribute = attribute.replace('_', ' ');
-
-    return this.message ? this.message.replace(':attribute', attribute) : `The ${attribute} field format is invalid.`;
+    return this.formatMessage(attribute, `The ${attribute} field format is invalid.`);
   }
 
   public validate(attribute: string, value: any, fail: (message: string) => void): void {

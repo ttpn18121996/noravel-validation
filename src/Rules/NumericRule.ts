@@ -1,18 +1,8 @@
-import { ValidationRule } from '../Contracts/ValidationRule';
+import ValidationRule from './ValidationRule';
 
-export default class NumericRule implements ValidationRule {
-  protected message?: string;
-
-  public setMessage(message?: string): this {
-    this.message = message;
-
-    return this;
-  }
-
+export default class NumericRule extends ValidationRule {
   public getMessage(attribute: string): string {
-    attribute = attribute.replace('_', ' ');
-
-    return this.message ? this.message.replace(':attribute', attribute) : `The ${attribute} field must be a number.`;
+    return this.formatMessage(attribute, `The ${attribute} field must be a number.`);
   }
 
   public validate(attribute: string, value: any, fail: (message: string) => void): void {

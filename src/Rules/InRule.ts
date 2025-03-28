@@ -1,20 +1,12 @@
-import { ValidationRule } from '../Contracts/ValidationRule';
+import ValidationRule from './ValidationRule';
 
-export default class StringRule implements ValidationRule {
-  protected message?: string;
-
-  public constructor(private values: string[] | number[]) {}
-
-  public setMessage(message?: string): this {
-    this.message = message;
-
-    return this;
+export default class StringRule extends ValidationRule {
+  public constructor(private values: string[] | number[]) {
+    super();
   }
 
   public getMessage(attribute: string): string {
-    attribute = attribute.replace('_', ' ');
-
-    return this.message ? this.message.replace(':attribute', attribute) : `The selected ${attribute} is invalid.`;
+    return this.formatMessage(attribute, 'The :attribute field must be a valid value.');
   }
 
   public validate(attribute: string, value: any, fail: (message: string) => void): void {

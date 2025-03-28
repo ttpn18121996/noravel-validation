@@ -1,19 +1,9 @@
-import { ValidationRule } from '../Contracts/ValidationRule';
+import ValidationRule from './ValidationRule';
 import { _str } from '@noravel/supporter';
 
-export default class RequiredRule implements ValidationRule {
-  protected message?: string;
-
-  public setMessage(message?: string): this {
-    this.message = message;
-
-    return this;
-  }
-
+export default class RequiredRule extends ValidationRule {
   public getMessage(attribute: string): string {
-    attribute = attribute.replace('_', ' ');
-
-    return this.message ? this.message.replace(':attribute', attribute) : `The ${attribute} field is required.`;
+    return this.formatMessage(attribute, 'The :attribute field is required.');
   }
 
   public validate(attribute: string, value: any, fail: (message: string) => void): void {

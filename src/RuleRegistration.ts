@@ -16,7 +16,7 @@ export default class RuleRegistration {
 
   private type: FieldType;
 
-  public constructor(private name?: string) {
+  public constructor() {
     this.rules = {};
     this.type = 'string';
   }
@@ -181,36 +181,5 @@ export default class RuleRegistration {
    */
   public serialize(): Record<string, ValidationRule> {
     return this.rules;
-  }
-
-  /**
-   * Get the name of the validation rule.
-   *
-   * @returns {string}
-   */
-  public getName(): string {
-    return this.name ?? '';
-  }
-
-  /**
-   * Set the name of the validation rule.
-   *
-   * @param {string} name
-   * @returns {this}
-   */
-  public setName(name: string): this {
-    this.name = name;
-
-    return this;
-  }
-
-  /**
-   * Format the validation message.
-   *
-   * @param {string} message
-   * @returns {string}
-   */
-  public formatMessage(message: string): string {
-    return message.replace(':attribute', this.name ?? '');
   }
 }
