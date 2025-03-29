@@ -16,9 +16,6 @@ export default class MinRule extends ValidationRule {
       case 'array':
         message += ` ${this.value} items.`;
         break;
-      case 'number':
-        message += ` ${this.value}.`;
-        break;
       case 'string':
         message += ` ${this.value} characters.`;
         break;
@@ -41,8 +38,6 @@ export default class MinRule extends ValidationRule {
       if (value < this.value) {
         fail(this.getMessage(attribute));
       }
-    } else {
-      fail(this.getMessage(attribute));
     }
   }
 }

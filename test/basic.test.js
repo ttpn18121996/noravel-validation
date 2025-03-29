@@ -1,4 +1,3 @@
-const { describe } = require('node:test');
 const { ValidationFactory } = require('../dist');
 
 describe('it can validate required rule', () => {
@@ -7,9 +6,13 @@ describe('it can validate required rule', () => {
       rule => ({
         first_name: rule().required(),
         last_name: rule().required(),
+        nick_name: rule().required(),
+        posts: rule().required(),
       }),
       {
         first_name: null,
+        last_name: '',
+        posts: [],
       },
     );
     validator.validated();
@@ -18,6 +21,8 @@ describe('it can validate required rule', () => {
     expect(expected).toEqual({
       first_name: ['The first name field is required.'],
       last_name: ['The last name field is required.'],
+      nick_name: ['The nick name field is required.'],
+      posts: ['The posts field is required.'],
     });
   });
 
@@ -121,14 +126,57 @@ describe('it can validate min rule', () => {
   });
 });
 
-test('it can make sure the selected value is in the list', () => {
-  const validator = ValidationFactory.make(rule => ({ gender: rule().in(['male', 'female']) }), { gender: 'John' });
+describe('it can make sure the selected value is in the list', () => {
+  test('with an array', () => {
+    const validator = ValidationFactory.make(rule => ({ gender: rule().in(['male', 'female']) }), { gender: 'John' });
 
-  const expected = () => {
-    validator.validate();
-  };
+    const expected = () => {
+      validator.validate();
+    };
 
-  expect(expected).toThrow('The gender field must be a valid value.');
+    expect(expected).toThrow('The gender field must be a valid value.');
+  });
+
+  test('with a string', () => {
+    const validator = ValidationFactory.make(rule => ({ gender: rule().in('male') }), { gender: 'John' });
+
+    const expected = () => {
+      validator.validate();
+    };
+
+    expect(expected).toThrow('The gender field must be a valid value.');
+  });
+
+  test('with a numeric', () => {
+    const validator = ValidationFactory.make(rule => ({ gender: rule().in(1) }), { gender: 'male' });
+
+    const expected = () => {
+      validator.validate();
+    };
+
+    expect(expected).toThrow('The gender field must be a valid value.');
+  });
+
+  test('with a json', () => {
+    const validator = ValidationFactory.make(rule => ({ gender: rule().in('["male","female"]') }), { gender: 'John' });
+
+    const expected = () => {
+      validator.validate();
+    };
+
+    expect(expected).toThrow('The gender field must be a valid value.');
+  });
+
+  test('with a arrayable', () => {
+    const genders = { toArray: () => ['male', 'female'] };
+    const validator = ValidationFactory.make(rule => ({ gender: rule().in(genders) }), { gender: 'John' });
+
+    const expected = () => {
+      validator.validate();
+    };
+
+    expect(expected).toThrow('The gender field must be a valid value.');
+  });
 });
 
 describe('it can validate email', () => {

@@ -1,8 +1,12 @@
+import { _col, getArray } from '@noravel/supporter';
 import ValidationRule from './ValidationRule';
 
 export default class StringRule extends ValidationRule {
-  public constructor(private values: string[] | number[]) {
+  private values: unknown[];
+
+  public constructor(values: unknown[]) {
     super();
+    this.values = getArray(values);
   }
 
   public getMessage(attribute: string): string {
@@ -10,10 +14,6 @@ export default class StringRule extends ValidationRule {
   }
 
   public validate(attribute: string, value: any, fail: (message: string) => void): void {
-    if (!Array.isArray(this.values)) {
-      return;
-    }
-
     if (this.values.length > 0) {
       if (typeof this.values[0] === 'string') {
         if (typeof value !== 'string' || !(this.values as string[]).includes(value)) {

@@ -43,3 +43,42 @@ test('it can make a custom class', () => {
 
   expect(expected).toThrow('The phone must be 10 digits');
 });
+
+test('it can get valid keys from the data', () => {
+  const validator = ValidationFactory.make(
+    rule => ({
+      name: rule().string().required(),
+      email: rule().email().required(),
+    }),
+    { name: 'John' },
+  );
+  const expected = validator.valid();
+
+  expect(expected).toEqual(['name']);
+});
+
+test('it can get invalid keys from the data', () => {
+  const validator = ValidationFactory.make(
+    rule => ({
+      name: rule().string().required(),
+      email: rule().email().required(),
+    }),
+    { name: 'John' },
+  );
+  const expected = validator.invalid();
+
+  expect(expected).toEqual(['email']);
+});
+
+test('it can get data from the validator', () => {
+  const validator = ValidationFactory.make(
+    rule => ({
+      name: rule().string().required(),
+      email: rule().email().required(),
+    }),
+    { name: 'John', email: 'ttpn18121996@example.com', other: 'something' },
+  );
+  const expected = validator.getData();
+
+  expect(expected).toEqual({ name: 'John', email: 'ttpn18121996@example.com', other: 'something' });
+});

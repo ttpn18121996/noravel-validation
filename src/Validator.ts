@@ -178,19 +178,15 @@ export default class Validator {
    * Add a validation message.
    *
    * @param {string} attribute
-   * @param {string} messages
+   * @param {string} message
    * @returns {void}
    */
-  public pushMessage(attribute: string, message: string): void {
-    if (!this.messages) {
-      this.messages = {};
+  protected pushMessage(attribute: string, message: string): void {
+    if (!this.messages?.[attribute]) {
+      (this.messages as Record<string, string[]>)[attribute] = [];
     }
 
-    if (!this.messages[attribute]) {
-      this.messages[attribute] = [];
-    }
-
-    this.messages[attribute].push(message);
+    (this.messages as Record<string, string[]>)[attribute].push(message);
   }
 
   /**

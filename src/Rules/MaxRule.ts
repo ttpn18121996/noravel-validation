@@ -16,9 +16,6 @@ export default class MaxRule extends ValidationRule {
       case 'array':
         message += ` ${this.value} items.`;
         break;
-      case 'number':
-        message += ` ${this.value}.`;
-        break;
       case 'string':
         message += ` ${this.value} characters.`;
         break;
