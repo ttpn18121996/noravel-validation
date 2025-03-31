@@ -6,7 +6,7 @@ export default class EmailRule extends ValidationRule {
   }
 
   public validate(attribute: string, value: any, fail: (message: string) => void): void {
-    if (typeof value !== 'string' || !value.match(/^[a-zA-Z0-9\._\-\+]+@[a-zA-Z0-9\._\-]+\.[a-zA-Z0-9\._\-]+$/i)) {
+    if (typeof value !== 'string' || !value.match(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/i)) {
       fail(this.getMessage(attribute));
     }
   }
