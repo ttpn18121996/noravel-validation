@@ -2,6 +2,10 @@
   "name": "@noravel/validation",
   "version": "1.0.0",
   "description": "Noravel validation",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ttpn18121996/noravel-validation.git"
+  },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
