@@ -28,6 +28,6 @@
     "typescript": "^5.8.2"
   },
   "dependencies": {
-    "@noravel/supporter": "^2.0"
+    "@noravel/supporter": "^2.1"
   }
 }
