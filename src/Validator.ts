@@ -61,6 +61,7 @@ export default class Validator {
 
           if (this.isValidationRule(rules[rule])) {
             const validationRule = rules[rule] as ValidationRule;
+            validationRule.setData(this.data);
 
             validationRule.validate(attribute, this.data[attribute], (message: string) => {
               this.pushMessage(attribute, message);
@@ -68,9 +69,11 @@ export default class Validator {
           }
         }
       } else if (this.isValidationRule(validationRule)) {
-        (validationRule as ValidationRule).validate(attribute, this.data[attribute], (message: string) => {
-          this.pushMessage(attribute, message);
-        });
+        (validationRule as ValidationRule)
+          .setData(this.data)
+          .validate(attribute, this.data[attribute], (message: string) => {
+            this.pushMessage(attribute, message);
+          });
       }
     });
 

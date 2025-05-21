@@ -250,3 +250,81 @@ test('it can get the validated data', () => {
     posts: [],
   });
 });
+
+describe('it can validate confirmation rule', () => {
+  test('with default confirmation field', () => {
+    const validator = ValidationFactory.make(rule => ({ password: rule().confirmed() }), {
+      password: '123456789',
+      password_confirmation: '987654321',
+    });
+
+    const expected = () => {
+      validator.validate();
+    };
+
+    expect(expected).toThrow('The password field confirmation does not match.');
+  });
+
+  test('with custom confirmation field', () => {
+    const validator = ValidationFactory.make(rule => ({ password: rule().confirmed('repeat_password') }), {
+      password: '123456789',
+      repeat_password: '987654321',
+    });
+
+    const expected = () => {
+      validator.validate();
+    };
+
+    expect(expected).toThrow('The password field confirmation does not match.');
+  });
+});
+
+describe('it can validate date rule', () => {
+  test('with default format', () => {
+    const validator = ValidationFactory.make(rule => ({ date_of_birth: rule().date() }), {
+      date_of_birth: '1996-12-18',
+    });
+
+    const expected = () => {
+      validator.validate();
+    };
+
+    expect(expected).not.toThrow('The date of birth field must be a valid date.');
+  });
+
+  test('with invalid date', () => {
+    const validator = ValidationFactory.make(rule => ({ date_of_birth: rule().date() }), {
+      date_of_birth: 'invalid date',
+    });
+
+    const expected = () => {
+      validator.validate();
+    };
+
+    expect(expected).not.toThrow('The date of birth field must be a valid date.');
+  });
+
+  test('with DD-MM-YYYY format', () => {
+    const validator = ValidationFactory.make(rule => ({ date_of_birth: rule().date('DD-MM-YYYY') }), {
+      date_of_birth: '18-12-1996',
+    });
+
+    const expected = () => {
+      validator.validate();
+    };
+
+    expect(expected).not.toThrow('The date of birth field must be a valid date.');
+  });
+
+  test('with MM-DD-YYYY format', () => {
+    const validator = ValidationFactory.make(rule => ({ date_of_birth: rule().date('MM-DD-YYYY') }), {
+      date_of_birth: '12-18-1996',
+    });
+
+    const expected = () => {
+      validator.validate();
+    };
+
+    expect(expected).not.toThrow('The date of birth field must be a valid date.');
+  });
+});

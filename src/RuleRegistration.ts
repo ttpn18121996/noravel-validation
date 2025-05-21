@@ -1,15 +1,17 @@
 import { FieldType } from './Contracts/Validatable';
-import MinRule from './Rules/MinRule';
 import { ValidationRule } from './Contracts/ValidationRule';
-import MaxRule from './Rules/MaxRule';
-import RequiredRule from './Rules/RequiredRule';
+import ArrayRule from './Rules/ArrayRule';
+import ConfirmationRule from './Rules/ConfirmationRule';
+import CustomRule from './Rules/CustomRule';
+import DateRule from './Rules/DateRule';
 import EmailRule from './Rules/EmailRule';
+import InRule from './Rules/InRule';
+import MaxRule from './Rules/MaxRule';
+import MinRule from './Rules/MinRule';
 import NumericRule from './Rules/NumericRule';
 import RegexRule from './Rules/RegexRule';
+import RequiredRule from './Rules/RequiredRule';
 import StringRule from './Rules/StringRule';
-import InRule from './Rules/InRule';
-import CustomRule from './Rules/CustomRule';
-import ArrayRule from './Rules/ArrayRule';
 
 export default class RuleRegistration {
   private rules: Record<string, ValidationRule>;
@@ -19,6 +21,19 @@ export default class RuleRegistration {
   public constructor() {
     this.rules = {};
     this.type = 'string';
+  }
+
+  /**
+   * Add a validation rule.
+   *
+   * @param {string} key
+   * @param {ValidationRule} rule
+   * @returns {this}
+   */
+  public addRule(key: string, rule: ValidationRule): this {
+    this.rules[key] = rule;
+
+    return this;
   }
 
   /**
@@ -33,6 +48,39 @@ export default class RuleRegistration {
     arrayRule.setMessage(message);
 
     this.rules.array = arrayRule;
+
+    return this;
+  }
+
+  /**
+   * Add a confirmed validation rule.
+   *
+   * @param {string} confirmWith
+   * @param {string} message
+   * @returns {this}
+   */
+  public confirmed(confirmWith?: string, message?: string): this {
+    const confirmedRule = new ConfirmationRule(confirmWith);
+    confirmedRule.setMessage(message);
+
+    this.rules.confirmed = confirmedRule;
+
+    return this;
+  }
+
+  /**
+   * Add a date validation rule.
+   *
+   * @param {string} format
+   * @param {string} message
+   * @returns {this}
+   */
+  public date(format: string = 'YYYY-MM-DD', message?: string): this {
+    this.type = 'date';
+    const dateRule = new DateRule(format);
+    dateRule.setMessage(message);
+
+    this.rules.date = dateRule;
 
     return this;
   }
@@ -115,6 +163,12 @@ export default class RuleRegistration {
     return this;
   }
 
+  /**
+   * Add a numeric validation rule.
+   *
+   * @param {string} message
+   * @returns {this}
+   */
   public numeric(message?: string): this {
     this.type = 'number';
 

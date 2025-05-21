@@ -1,5 +1,6 @@
 import CustomRule from './Rules/CustomRule';
 import RuleRegistration from './RuleRegistration';
+import ValidationRule from './Rules/ValidationRule';
 import Validator from './Validator';
 
 class ValidationFactory {
@@ -30,4 +31,4 @@ class ValidationFactory {
   }
 }
 
-export { CustomRule, RuleRegistration, ValidationFactory, Validator };
+export { CustomRule, RuleRegistration, ValidationFactory, Validator, ValidationRule };

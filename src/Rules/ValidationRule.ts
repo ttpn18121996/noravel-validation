@@ -1,5 +1,8 @@
-export default abstract class Rule {
+import { ValidationRule } from '../Contracts/ValidationRule';
+
+export default abstract class Rule implements ValidationRule {
   protected message?: string;
+  protected data: Record<string, any> = {};
 
   /**
    * Set the validation message.
@@ -9,6 +12,18 @@ export default abstract class Rule {
    */
   public setMessage(message?: string): this {
     this.message = message;
+
+    return this;
+  }
+
+  /**
+   * Set the data under validation.
+   *
+   * @param {Record<string, any>} data
+   * @returns {this}
+   */
+  public setData(data: Record<string, any>): this {
+    this.data = data;
 
     return this;
   }

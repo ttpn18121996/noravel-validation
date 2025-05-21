@@ -42,11 +42,15 @@ console.log(validator.validated());
 ## Available validation rules
 
 - [array](#array)
+- [confirmed](#confirmed)
+- [date](#date)
 - [email](#email)
 - [in](#in)
 - [max](#max)
 - [min](#min)
+- [numeric](#numeric)
 - [required](#required)
+- [string](#string)
 
 ### array
 
@@ -69,6 +73,99 @@ if (validator.fails()) {
   posts: ['The posts field must be an array.']
 }
 */
+```
+
+### confirmed
+
+The field under validation must match the value of `{field}_confirmation`.
+For example, if the field under validation is `password`,
+a matching `password_confirmation` field should be present in the input data.
+
+```js
+const validator = ValidationFactory.make(
+  rule => ({
+    password: rule().required().confirmed(),
+  }),
+  {
+    password: '123456',
+    password_confirmation: '654321',
+  }
+);
+
+if (validator.fails()) {
+  console.log(validator.getMessage());
+}
+
+/*
+{
+  password: ['The password field confirmation does not match.'],
+}
+*/
+```
+
+You may also pass a custom confirmation field name to the `confirmed` method.
+
+```js
+const validator = ValidationFactory.make(
+  rule => ({
+    password: rule().required().confirmed('repeat_password'),
+  }),
+  {
+    password: '123456',
+    repeat_password: '654321',
+  }
+);
+
+if (validator.fails()) {
+  console.log(validator.getMessage());
+}
+
+/*
+{
+  password: ['The password field confirmation does not match.'],
+}
+*/
+```
+
+### date
+
+The field under validation must be a valid date.
+By default, the date rule uses format `YYYY-MM-DD`.
+
+```js
+const validator = ValidationFactory.make(
+  rule => ({
+    date_of_birth: rule().date(),
+  }),
+  { date_of_birth: '18-12-1996' },
+);
+
+if (validator.fails()) {
+  console.log(validator.getMessage());
+}
+
+/*
+{
+  date_of_birth: ['The date of birth field must be a valid date.'],
+}
+*/
+```
+
+You can also use the `date` method to validate a date with a custom format.
+
+```js
+const validator = ValidationFactory.make(
+  rule => ({
+    date_of_birth: rule().date('DD-MM-YYYY'),
+  }),
+  { date_of_birth: '18-12-1996' },
+);
+
+if (validator.fails()) {
+  console.log(validator.getMessage());
+}
+
+// Now the log will be empty, because the date of birth is valid.
 ```
 
 ### email
@@ -292,7 +389,9 @@ This method receives the attribute name, its value,
 and a callback that should be invoked on failure with the validation error message.
 
 ```js
-class PhoneRule {
+import { ValidationRule } from '@noravel/validation';
+
+class PhoneRule extends ValidationRule {
   validate(attribute, value, fail) {
     if (!/^(\+\d{1,3}[- ]?)?(\(\d{3}\)|\d{3})[- ]?\d{3}[- ]?\d{4}$/.test(value)) {
       fail(`The ${attribute} must be a valid phone number.`);
@@ -377,3 +476,27 @@ if (validator.fails()) {
 */
 ```
 
+You also can mix custom rule with other rules.
+
+```js
+import { CustomRule } from '@noravel/validation';
+
+const UppercaseRule = new CustomRule((attribute, value, fail) => {
+  if (value !== value.toUpperCase()) {
+    fail(`The ${attribute} field must be uppercase.`);
+  }
+});
+
+ValidationFactory.make(
+  rule => ({
+    code: rule().addRule('code', UppercaseRule).nullable(),
+  }),
+  { code: null },
+);
+
+if (validator.fails()) {
+  console.log(validator.getMessage());
+}
+
+// The log will be empty, because the code is nullable.
+```
