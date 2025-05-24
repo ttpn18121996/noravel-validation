@@ -45,6 +45,7 @@ console.log(validator.validated());
 - [confirmed](#confirmed)
 - [date](#date)
 - [email](#email)
+- [file](#file)
 - [in](#in)
 - [max](#max)
 - [min](#min)
@@ -188,6 +189,73 @@ if (validator.fails()) {
 /*
 {
   email: ['The email field must be a valid email address.']
+}
+*/
+```
+
+### file
+
+The field under validation must be a file.
+
+```js
+const validator = ValidationFactory.make(
+  rule => ({
+    file: rule().file(),
+  }),
+  { file: 'ttpn18121996' },
+);
+
+if (validator.fails()) {
+  console.log(validator.getMessage());
+}
+
+/*
+{
+  file: ['The file field must be a file.'],
+}
+*/
+```
+
+You can also pass a list of mime types to the `file` method.
+
+```js
+const file = new File(['test.txt'], 'test.txt', { type: 'text/plain' });
+const validator = ValidationFactory.make(
+  rule => ({
+    file: rule().mimetypes('image/jpeg, image/png'),
+  }),
+  { file },
+);
+
+if (validator.fails()) {
+  console.log(validator.getMessage());
+}
+
+/*
+{
+  file: ['The file field must be a file of type: image/jpeg, image/png.'],
+}
+*/
+```
+
+Or you can pass an array of extensions to the `file` method.
+
+```js
+const file = new File(['test.txt'], 'test.txt', { type: 'text/plain' });
+const validator = ValidationFactory.make(
+  rule => ({
+    file: rule().mimes(['.jpg', '.png']),
+  }),
+  { file },
+);
+
+if (validator.fails()) {
+  console.log(validator.getMessage());
+}
+
+/*
+{
+  file: ['The file field must be a file of type: .jpg, .png.'],
 }
 */
 ```

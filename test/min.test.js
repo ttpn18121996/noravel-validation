@@ -10,19 +10,19 @@ test('it can validate the min value of the number', () => {
 });
 
 test('it can validate the minimum number of characters of the string', () => {
-    const validator = ValidationFactory.make(rule => ({ name: rule().string().min(3) }), { name: 'na' });
-    const expected = () => {
-      validator.validate();
-    };
+  const validator = ValidationFactory.make(rule => ({ name: rule().string().min(3) }), { name: 'na' });
+  const expected = () => {
+    validator.validate();
+  };
 
-    expect(expected).toThrow('The name field must be at least 3 characters.');
+  expect(expected).toThrow('The name field must be at least 3 characters.');
 });
 
 test('it can validate the minimum number of items of the array', () => {
-    const validator = ValidationFactory.make(rule => ({ name: rule().array().min(3) }), { name: [] });
-    const expected = () => {
-      validator.validate();
-    };
+  const validator = ValidationFactory.make(rule => ({ name: rule().array().min(3) }), { name: [] });
+  const expected = () => {
+    validator.validate();
+  };
 
-    expect(expected).toThrow('The name field must be at least 3 items.');
+  expect(expected).toThrow('The name field must be at least 3 items.');
 });

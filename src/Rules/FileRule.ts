@@ -1,7 +1,10 @@
 import ValidationRule from './ValidationRule';
 
 export default class FileRule extends ValidationRule {
-  public constructor(protected mimes: string = '*', protected type: 'mimes' | 'mimetypes' = 'mimes') {
+  public constructor(
+    protected mimes: string = '*',
+    protected type: 'mimes' | 'mimetypes' = 'mimes',
+  ) {
     super();
   }
 
@@ -11,7 +14,7 @@ export default class FileRule extends ValidationRule {
 
       return this.formatMessage(attribute, 'The :attribute field must be a file of type: :values.').replace(
         ':values',
-        values.join(', ')
+        values.join(', '),
       );
     }
 

@@ -78,8 +78,6 @@ test('it can validate nullable rule', () => {
   expect(validator.passes()).toBeTruthy();
 });
 
-
-
 test('it can validate regex rule', () => {
   const validator = ValidationFactory.make(rule => ({ name: rule().regex(/^[a-zA-Z ]+$/) }), { name: '12342132' });
 
