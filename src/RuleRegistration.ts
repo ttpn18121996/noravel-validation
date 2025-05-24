@@ -5,6 +5,7 @@ import ConfirmationRule from './Rules/ConfirmationRule';
 import CustomRule from './Rules/CustomRule';
 import DateRule from './Rules/DateRule';
 import EmailRule from './Rules/EmailRule';
+import FileRule from './Rules/FileRule';
 import InRule from './Rules/InRule';
 import MaxRule from './Rules/MaxRule';
 import MinRule from './Rules/MinRule';
@@ -101,6 +102,21 @@ export default class RuleRegistration {
   }
 
   /**
+   * Add a file validation rule.
+   *
+   * @param {string} message
+   * @returns {this}
+   */
+  public file(message?: string): this {
+    const fileRule = new FileRule();
+    fileRule.setMessage(message);
+
+    this.rules.file = fileRule;
+
+    return this;
+  }
+
+  /**
    * Add an in validation rule.
    *
    * @param {string[] | number[]} values
@@ -133,6 +149,38 @@ export default class RuleRegistration {
   }
 
   /**
+   * Add a mimes validation rule.
+   *
+   * @param {string} mimes
+   * @param {string} message
+   * @returns {this}
+   */
+  public mimes(mimes: string, message?: string): this {
+    const fileRule = new FileRule(mimes, 'mimes');
+    fileRule.setMessage(message);
+
+    this.rules.mimes = fileRule;
+
+    return this;
+  }
+
+  /**
+   * Add a mimetypes validation rule.
+   *
+   * @param {string} mimetypes
+   * @param {string} message
+   * @returns {this}
+   */
+  public mimetypes(mimetypes: string, message?: string): this {
+    const fileRule = new FileRule(mimetypes, 'mimetypes');
+    fileRule.setMessage(message);
+
+    this.rules.mimetypes = fileRule;
+
+    return this;
+  }
+
+  /**
    * Add a min validation rule.
    *
    * @param {number} min
@@ -158,7 +206,7 @@ export default class RuleRegistration {
       delete this.rules.required;
     }
 
-    this.rules.nullable = new CustomRule((attribute: string, value: any, fail: (message: string) => void) => {});
+    this.rules.nullable = new CustomRule(() => {});
 
     return this;
   }
