@@ -61,6 +61,7 @@ export default class Validator {
 
           if (this.isValidationRule(rules[rule])) {
             const validationRule = rules[rule] as ValidationRule;
+            validationRule.setData(this.data);
 
             validationRule.validate(attribute, this.data[attribute], (message: string) => {
               this.pushMessage(attribute, message);
@@ -68,9 +69,11 @@ export default class Validator {
           }
         }
       } else if (this.isValidationRule(validationRule)) {
-        (validationRule as ValidationRule).validate(attribute, this.data[attribute], (message: string) => {
-          this.pushMessage(attribute, message);
-        });
+        (validationRule as ValidationRule)
+          .setData(this.data)
+          .validate(attribute, this.data[attribute], (message: string) => {
+            this.pushMessage(attribute, message);
+          });
       }
     });
 
@@ -148,10 +151,38 @@ export default class Validator {
    * @param {Record<string, any>} data
    * @returns {this}
    */
-  public setData(data: Record<string, any>): this {
-    this.data = data;
+  public setData(data: Record<string, any> | FormData): this {
+    this.data = this.getObjectableItems(data);
 
     return this;
+  }
+
+  /**
+   * Get the objectable items from the data.
+   *
+   * @param {Record<string, any> | FormData | URLSearchParams} data
+   * @returns {Record<string, any>}
+   */
+  private getObjectableItems(data: Record<string, any> | FormData | URLSearchParams): Record<string, any> {
+    const result: Record<string, any> = {};
+
+    if (data instanceof FormData || data instanceof URLSearchParams) {
+      for (const [key, value] of data.entries()) {
+        if (result.hasOwnProperty(key)) {
+          if (Array.isArray(result[key])) {
+            result[key].push(value);
+          } else {
+            result[key] = [result[key], value];
+          }
+        } else {
+          result[key] = value;
+        }
+      }
+    } else if (typeof data === 'object' && data !== null) {
+      return data;
+    }
+
+    return result;
   }
 
   /**

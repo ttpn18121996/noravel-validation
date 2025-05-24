@@ -1,4 +1,4 @@
-const { ValidationFactory } = require('../dist');
+const { ValidationFactory, ValidationRule } = require('../dist');
 
 test('it can make a custom rule', () => {
   const CustomRule = ValidationFactory.makeRule((attribute, value, fail) => {
@@ -22,7 +22,7 @@ test('it can make a custom rule', () => {
 });
 
 test('it can make a custom class', () => {
-  class PhoneRule {
+  class PhoneRule extends ValidationRule {
     validate(attribute, value, fail) {
       if (!/^\d{10}$/.test(value)) {
         fail(`The ${attribute} must be 10 digits`);
@@ -81,4 +81,27 @@ test('it can get data from the validator', () => {
   const expected = validator.getData();
 
   expect(expected).toEqual({ name: 'John', email: 'ttpn18121996@example.com', other: 'something' });
+});
+
+test('it can mix custom rule with other rules', () => {
+  class PhoneRule extends ValidationRule {
+    validate(attribute, value, fail) {
+      if (!/^\d{10}$/.test(value)) {
+        fail(`The ${attribute} must be 10 digits`);
+      }
+    }
+  }
+
+  const expected = () => {
+    ValidationFactory.make(
+      rule => ({
+        phone: rule().addRule('phone', new PhoneRule()).nullable(),
+      }),
+      {
+        phone: null,
+      },
+    ).validate();
+  };
+
+  expect(expected).not.toThrow('The phone must be 10 digits');
 });

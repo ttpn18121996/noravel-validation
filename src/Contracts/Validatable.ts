@@ -1,1 +1,1 @@
-export type FieldType = 'string' | 'number' | 'array';
+export type FieldType = 'string' | 'number' | 'array' | 'date';
