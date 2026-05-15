@@ -5,7 +5,7 @@ export default class StringRule extends ValidationRule {
     return this.formatMessage(attribute, `The ${attribute} field must be a string.`);
   }
 
-  public validate(attribute: string, value: any, fail: (message: string) => void): void {
+  public async validate(attribute: string, value: any, fail: (message: string) => void): Promise<void> {
     if (typeof value !== 'string') {
       fail(this.getMessage(attribute));
     }

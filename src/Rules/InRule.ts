@@ -13,7 +13,7 @@ export default class StringRule extends ValidationRule {
     return this.formatMessage(attribute, 'The :attribute field must be a valid value.');
   }
 
-  public validate(attribute: string, value: any, fail: (message: string) => void): void {
+  public async validate(attribute: string, value: any, fail: (message: string) => void): Promise<void> {
     if (this.values.length > 0) {
       if (typeof this.values[0] === 'string') {
         if (typeof value !== 'string' || !(this.values as string[]).includes(value)) {

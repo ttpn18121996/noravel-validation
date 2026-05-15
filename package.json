@@ -1,6 +1,6 @@
 {
   "name": "@noravel/validation",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "description": "Noravel validation",
   "repository": {
     "type": "git",
@@ -12,8 +12,8 @@
     "build": "tsc",
     "test": "jest",
     "test:coverage": "jest --verbose --coverage",
-    "prettier:check": "prettier --ignore-path .prettierignore --check '**/*.{js,ts,json,md}'",
-    "prettier:fix": "prettier --ignore-path .prettierignore --write '**/*.{js,ts,json,md}'"
+    "prettier:check": "prettier --ignore-path .prettierignore --check '**/*.{js,ts,json}'",
+    "prettier:fix": "prettier --ignore-path .prettierignore --write '**/*.{js,ts,json}'"
   },
   "files": [
     "dist"

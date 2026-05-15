@@ -1,13 +1,13 @@
 const { ValidationFactory, ValidationRule } = require('../dist');
 
-test('it can make a custom rule', () => {
+test('it can make a custom rule', async () => {
   const CustomRule = ValidationFactory.makeRule((attribute, value, fail) => {
     if (value === 'failed') {
       fail(`The ${attribute} field must not be failed.`);
     }
   });
 
-  const expected = () => {
+  await expect(
     ValidationFactory.make(
       _ => ({
         status: CustomRule,
@@ -15,13 +15,11 @@ test('it can make a custom rule', () => {
       {
         status: 'failed',
       },
-    ).validate();
-  };
-
-  expect(expected).toThrow('The status field must not be failed.');
+    ).validate(),
+  ).rejects.toThrow('The status field must not be failed.');
 });
 
-test('it can make a custom class', () => {
+test('it can make a custom class', async () => {
   class PhoneRule extends ValidationRule {
     validate(attribute, value, fail) {
       if (!/^\d{10}$/.test(value)) {
@@ -30,7 +28,7 @@ test('it can make a custom class', () => {
     }
   }
 
-  const expected = () => {
+  await expect(
     ValidationFactory.make(
       _ => ({
         phone: new PhoneRule(),
@@ -38,13 +36,11 @@ test('it can make a custom class', () => {
       {
         phone: 'wrong phone number',
       },
-    ).validate();
-  };
-
-  expect(expected).toThrow('The phone must be 10 digits');
+    ).validate(),
+  ).rejects.toThrow('The phone must be 10 digits');
 });
 
-test('it can get valid keys from the data', () => {
+test('it can get valid keys from the data', async () => {
   const validator = ValidationFactory.make(
     rule => ({
       name: rule().string().required(),
@@ -52,12 +48,11 @@ test('it can get valid keys from the data', () => {
     }),
     { name: 'John' },
   );
-  const expected = validator.valid();
 
-  expect(expected).toEqual(['name']);
+  await expect(validator.valid()).resolves.toEqual(['name']);
 });
 
-test('it can get invalid keys from the data', () => {
+test('it can get invalid keys from the data', async () => {
   const validator = ValidationFactory.make(
     rule => ({
       name: rule().string().required(),
@@ -65,9 +60,8 @@ test('it can get invalid keys from the data', () => {
     }),
     { name: 'John' },
   );
-  const expected = validator.invalid();
 
-  expect(expected).toEqual(['email']);
+  await expect(validator.invalid()).resolves.toEqual(['email']);
 });
 
 test('it can get data from the validator', () => {
@@ -78,12 +72,15 @@ test('it can get data from the validator', () => {
     }),
     { name: 'John', email: 'ttpn18121996@example.com', other: 'something' },
   );
-  const expected = validator.getData();
 
-  expect(expected).toEqual({ name: 'John', email: 'ttpn18121996@example.com', other: 'something' });
+  expect(validator.getData()).toEqual({
+    name: 'John',
+    email: 'ttpn18121996@example.com',
+    other: 'something',
+  });
 });
 
-test('it can mix custom rule with other rules', () => {
+test('it can mix custom rule with other rules', async () => {
   class PhoneRule extends ValidationRule {
     validate(attribute, value, fail) {
       if (!/^\d{10}$/.test(value)) {
@@ -92,7 +89,7 @@ test('it can mix custom rule with other rules', () => {
     }
   }
 
-  const expected = () => {
+  await expect(
     ValidationFactory.make(
       rule => ({
         phone: rule().addRule('phone', new PhoneRule()).nullable(),
@@ -100,8 +97,6 @@ test('it can mix custom rule with other rules', () => {
       {
         phone: null,
       },
-    ).validate();
-  };
-
-  expect(expected).not.toThrow('The phone must be 10 digits');
+    ).validate(),
+  ).resolves.not.toThrow('The phone must be 10 digits');
 });
