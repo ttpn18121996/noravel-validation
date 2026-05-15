@@ -1,6 +1,6 @@
 const { ValidationFactory } = require('../dist');
 
-test('it can validate a file', () => {
+test('it can validate a file', async () => {
   const validator = ValidationFactory.make(
     rule => ({
       file: rule().file(),
@@ -9,7 +9,7 @@ test('it can validate a file', () => {
       file: 'test.txt',
     },
   );
-  validator.validated();
+  await validator.validated();
   const expected = validator.errors();
 
   expect(expected).toEqual({
@@ -18,7 +18,7 @@ test('it can validate a file', () => {
 });
 
 describe('it can validate a file with mimes', () => {
-  test('with mimes', () => {
+  test('with mimes', async () => {
     const file = new File(['test.txt'], 'test.txt', { type: 'text/plain' });
     const validator = ValidationFactory.make(
       rule => ({
@@ -28,7 +28,7 @@ describe('it can validate a file with mimes', () => {
         file: file,
       },
     );
-    validator.validated();
+    await validator.validated();
     const expected = validator.errors();
 
     expect(expected).toEqual({
@@ -36,7 +36,7 @@ describe('it can validate a file with mimes', () => {
     });
   });
 
-  test('with mimetypes', () => {
+  test('with mimetypes', async () => {
     const file = new File(['test.txt'], 'test.txt', { type: 'text/plain' });
     const validator = ValidationFactory.make(
       rule => ({
@@ -46,7 +46,7 @@ describe('it can validate a file with mimes', () => {
         file: file,
       },
     );
-    validator.validated();
+    await validator.validated();
     const expected = validator.errors();
 
     expect(expected).toEqual({

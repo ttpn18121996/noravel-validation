@@ -27,7 +27,7 @@ export default class MinRule extends ValidationRule {
     return this.formatMessage(attribute, message);
   }
 
-  public validate(attribute: string, value: any, fail: (message: string) => void): void {
+  public async validate(attribute: string, value: any, fail: (message: string) => void): Promise<void> {
     if (this.type === 'string' || this.type === 'array') {
       if (typeof value === 'string' || Array.isArray(value)) {
         if (value.length < this.value) {

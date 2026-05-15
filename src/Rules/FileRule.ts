@@ -21,7 +21,7 @@ export default class FileRule extends ValidationRule {
     return this.formatMessage(attribute, 'The :attribute field must be a file.');
   }
 
-  public validate(attribute: string, value: any, fail: (message: string) => void): void {
+  public async validate(attribute: string, value: any, fail: (message: string) => void): Promise<void> {
     if (!(value instanceof File)) {
       fail(this.getMessage(attribute));
     }

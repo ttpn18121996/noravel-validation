@@ -5,7 +5,7 @@ export default class EmailRule extends ValidationRule {
     return this.formatMessage(attribute, 'The :attribute field must be a valid email address.');
   }
 
-  public validate(attribute: string, value: any, fail: (message: string) => void): void {
+  public async validate(attribute: string, value: any, fail: (message: string) => void): Promise<void> {
     if (typeof value !== 'string' || !value.match(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/i)) {
       fail(this.getMessage(attribute));
     }

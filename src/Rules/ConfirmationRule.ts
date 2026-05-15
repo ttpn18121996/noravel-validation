@@ -10,7 +10,7 @@ export default class ConfirmationRule extends ValidationRule {
     return this.formatMessage(attribute, `The ${attribute} field confirmation does not match.`);
   }
 
-  public validate(attribute: string, value: any, fail: (message: string) => void): void {
+  public async validate(attribute: string, value: any, fail: (message: string) => void): Promise<void> {
     if (!this.confirmWith) {
       this.confirmWith = `${attribute}_confirmation`;
     }

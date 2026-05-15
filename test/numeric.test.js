@@ -3,30 +3,23 @@ const { ValidationFactory } = require('../dist');
 test('it can validate a invalid number', () => {
   const validator = ValidationFactory.make(rule => ({ age: rule().numeric() }), { age: 'my age' });
 
-  const expected = () => {
-    validator.validate();
-  };
-
-  expect(expected).toThrow('The age field must be a number.');
+  expect(validator.validate()).rejects.toThrow('The age field must be a number.');
 });
 
-test('it can pass a digits', () => {
+test('it can pass a digits', async () => {
   const validator = ValidationFactory.make(rule => ({ age: rule().numeric() }), { age: '123' });
 
-  const expected = () => {
-    validator.validate();
-  };
-
-  expect(expected).not.toThrow();
+  await expect(validator.validate()).resolves.toBeTruthy();
 });
 
-test('it can validate a required number', () => {
+test('it can validate a required number', async () => {
   const validator = ValidationFactory.make(rule => ({ age: rule().numeric().required() }), { age: null });
-  validator.validated();
 
-  const expected = validator.errors();
+  await expect(validator.validate()).rejects.toThrow('The age field must be a number.');
 
-  expect(expected).toEqual({
+  const errors = validator.errors();
+
+  expect(errors).toEqual({
     age: ['The age field must be a number.', 'The age field is required.'],
   });
 });

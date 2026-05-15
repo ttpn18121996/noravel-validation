@@ -38,5 +38,5 @@ export default abstract class Rule implements ValidationRule {
     return (this.message ?? defaultMessage).replace(':attribute', attribute.replace('_', ' '));
   }
 
-  abstract validate(attribute: string, value: any, fail: (message: string) => void): void;
+  abstract validate(attribute: string, value: any, fail: (message: string) => void): Promise<void>;
 }

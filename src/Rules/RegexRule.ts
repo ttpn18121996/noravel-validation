@@ -9,7 +9,7 @@ export default class RegexRule extends ValidationRule {
     return this.formatMessage(attribute, `The ${attribute} field format is invalid.`);
   }
 
-  public validate(attribute: string, value: any, fail: (message: string) => void): void {
+  public async validate(attribute: string, value: any, fail: (message: string) => void): Promise<void> {
     value = String(value);
 
     if (!this.pattern.test(value)) {

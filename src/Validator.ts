@@ -20,12 +20,12 @@ export default class Validator {
    *
    * @returns {this}
    */
-  public validate(): Record<string, any> | undefined {
-    if (this.fails()) {
+  public async validate(): Promise<Record<string, any> | undefined> {
+    if (await this.fails()) {
       throw new ValidationException(this.getMessage());
     }
 
-    return this.validated();
+    return await this.validated();
   }
 
   /**
@@ -33,12 +33,12 @@ export default class Validator {
    *
    * @returns {Record<string, any>}
    */
-  public validated(): Record<string, any> {
+  public async validated(): Promise<Record<string, any>> {
     if (!this.messages) {
-      this.passes();
+      await this.passes();
     }
 
-    return this.getValidatedData();
+    return await this.getValidatedData();
   }
 
   /**
@@ -46,10 +46,10 @@ export default class Validator {
    *
    * @returns {boolean}
    */
-  public passes(): boolean {
+  public async passes(): Promise<boolean> {
     this.messages = {};
 
-    Object.keys(this.rules).forEach((attribute: string) => {
+    for (const attribute of Object.keys(this.rules)) {
       const validationRule: RuleRegistration | CustomRule = this.rules[attribute];
 
       if (validationRule instanceof RuleRegistration) {
@@ -63,19 +63,19 @@ export default class Validator {
             const validationRule = rules[rule] as ValidationRule;
             validationRule.setData(this.data);
 
-            validationRule.validate(attribute, this.data[attribute], (message: string) => {
+            await validationRule.validate(attribute, this.data[attribute], (message: string) => {
               this.pushMessage(attribute, message);
             });
           }
         }
       } else if (this.isValidationRule(validationRule)) {
-        (validationRule as ValidationRule)
+        await (validationRule as ValidationRule)
           .setData(this.data)
           .validate(attribute, this.data[attribute], (message: string) => {
             this.pushMessage(attribute, message);
           });
       }
-    });
+    }
 
     return Object.keys(this.messages).length === 0;
   }
@@ -112,8 +112,8 @@ export default class Validator {
    *
    * @returns {boolean}
    */
-  public fails(): boolean {
-    return !this.passes();
+  public async fails(): Promise<boolean> {
+    return !(await this.passes());
   }
 
   /**
@@ -121,9 +121,9 @@ export default class Validator {
    *
    * @returns {string[]}
    */
-  public valid(): string[] {
+  public async valid(): Promise<string[]> {
     if (!this.messages) {
-      this.passes();
+      await this.passes();
     }
 
     const validateKey = Object.keys(this.rules);
@@ -137,9 +137,9 @@ export default class Validator {
    *
    * @returns {string[]}
    */
-  public invalid(): string[] {
+  public async invalid(): Promise<string[]> {
     if (!this.messages) {
-      this.passes();
+      await this.passes();
     }
 
     return Object.keys(this.messages ?? {});
@@ -199,8 +199,8 @@ export default class Validator {
    *
    * @returns {Record<string, any>}
    */
-  public getValidatedData(): Record<string, any> {
-    this.validData = _obj.only(this.data, this.valid());
+  public async getValidatedData(): Promise<Record<string, any>> {
+    this.validData = _obj.only(this.data, await this.valid());
 
     return this.validData;
   }

@@ -6,7 +6,7 @@ export default class RequiredRule extends ValidationRule {
     return this.formatMessage(attribute, 'The :attribute field is required.');
   }
 
-  public validate(attribute: string, value: any, fail: (message: string) => void): void {
+  public async validate(attribute: string, value: any, fail: (message: string) => void): Promise<void> {
     if (value === null || value === undefined) {
       fail(this.getMessage(attribute));
     } else if (typeof value === 'string') {

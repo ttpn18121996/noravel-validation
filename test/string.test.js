@@ -1,23 +1,23 @@
 const { ValidationFactory } = require('../dist');
 
-test('it can validate a string', () => {
+test('it can validate a string', async () => {
   const validator = ValidationFactory.make(rule => ({ name: rule().string() }), { name: [] });
-  validator.validated();
+  await validator.validated();
 
-  const expected = validator.errors();
+  const actual = validator.errors();
 
-  expect(expected).toEqual({
+  expect(actual).toEqual({
     name: ['The name field must be a string.'],
   });
 });
 
-test('it can validate a required string', () => {
+test('it can validate a required string', async () => {
   const validator = ValidationFactory.make(rule => ({ name: rule().string().required() }), { name: null });
-  validator.validated();
+  await validator.validated();
 
-  const expected = validator.errors();
+  const actual = validator.errors();
 
-  expect(expected).toEqual({
+  expect(actual).toEqual({
     name: ['The name field must be a string.', 'The name field is required.'],
   });
 });

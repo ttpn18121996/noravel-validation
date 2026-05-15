@@ -1,6 +1,6 @@
 # Noravel validation
 
-This is a support library for Nam's projects.
+This is a support library for Noravel projects.
 
 # Content
 
@@ -9,6 +9,7 @@ This is a support library for Nam's projects.
 - [Available validation rules](#available-validation-rules)
 - [Custom validation messages](#custom-validation-messages)
 - [Custom validation rules](#custom-validation-rules)
+- [Custom validation rules with database](#custom-validation-rules-with-database)
 
 ## Installation
 
@@ -32,11 +33,11 @@ const validator = ValidationFactory.make(
   }
 );
 
-if (validator.fails()) {
+if (await validator.fails()) {
   console.log(validator.getMessage());
 }
 
-console.log(validator.validated());
+console.log(await validator.validated());
 ```
 
 ## Available validation rules
@@ -65,7 +66,7 @@ const validator = ValidationFactory.make(
   { posts: 123 },
 );
 
-if (validator.fails()) {
+if (await validator.fails()) {
   console.log(validator.getMessage());
 }
 
@@ -93,7 +94,7 @@ const validator = ValidationFactory.make(
   }
 );
 
-if (validator.fails()) {
+if (await validator.fails()) {
   console.log(validator.getMessage());
 }
 
@@ -117,7 +118,7 @@ const validator = ValidationFactory.make(
   }
 );
 
-if (validator.fails()) {
+if (await validator.fails()) {
   console.log(validator.getMessage());
 }
 
@@ -141,7 +142,7 @@ const validator = ValidationFactory.make(
   { date_of_birth: '18-12-1996' },
 );
 
-if (validator.fails()) {
+if (await validator.fails()) {
   console.log(validator.getMessage());
 }
 
@@ -162,7 +163,7 @@ const validator = ValidationFactory.make(
   { date_of_birth: '18-12-1996' },
 );
 
-if (validator.fails()) {
+if (await validator.fails()) {
   console.log(validator.getMessage());
 }
 
@@ -182,7 +183,7 @@ const validator = ValidationFactory.make(
   { email: 'ttpn18121996' },
 );
 
-if (validator.fails()) {
+if (await validator.fails()) {
   console.log(validator.getMessage());
 }
 
@@ -205,7 +206,7 @@ const validator = ValidationFactory.make(
   { file: 'ttpn18121996' },
 );
 
-if (validator.fails()) {
+if (await validator.fails()) {
   console.log(validator.getMessage());
 }
 
@@ -227,7 +228,7 @@ const validator = ValidationFactory.make(
   { file },
 );
 
-if (validator.fails()) {
+if (await validator.fails()) {
   console.log(validator.getMessage());
 }
 
@@ -249,7 +250,7 @@ const validator = ValidationFactory.make(
   { file },
 );
 
-if (validator.fails()) {
+if (await validator.fails()) {
   console.log(validator.getMessage());
 }
 
@@ -274,7 +275,7 @@ const validator = ValidationFactory.make(
   }
 );
 
-if (validator.fails()) {
+if (await validator.fails()) {
   console.log(validator.getMessage());
 }
 
@@ -304,7 +305,7 @@ const validator = ValidationFactory.make(
   },
 );
 
-if (validator.fails()) {
+if (await validator.fails()) {
   console.log(validator.getMessage());
 }
 
@@ -336,7 +337,7 @@ const validator = ValidationFactory.make(
   },
 );
 
-if (validator.fails()) {
+if (await validator.fails()) {
   console.log(validator.getMessage());
 }
 
@@ -361,7 +362,7 @@ const validator = ValidationFactory.make(
   { age: 'my age' },
 );
 
-if (validator.fails()) {
+if (await validator.fails()) {
   console.log(validator.getMessage());
 }
 
@@ -387,7 +388,7 @@ const validator = ValidationFactory.make(
   { name: null, email: '', password: '    ' },
 );
 
-if (validator.fails()) {
+if (await validator.fails()) {
   console.log(validator.getMessage());
 }
 
@@ -413,7 +414,7 @@ const validator = ValidationFactory.make(
   { name: 123 },
 );
 
-if (validator.fails()) {
+if (await validator.fails()) {
   console.log(validator.getMessage());
 }
 
@@ -437,7 +438,7 @@ const validator = ValidationFactory.make(
   { name: null, email: 'ttpn18121996' },
 );
 
-if (validator.fails()) {
+if (await validator.fails()) {
   console.log(validator.getMessage());
 }
 
@@ -474,7 +475,7 @@ const validator = ValidationFactory.make(
   { phone: 'my phone number' },
 );
 
-if (validator.fails()) {
+if (await validator.fails()) {
   console.log(validator.getMessage());
 }
 
@@ -503,7 +504,7 @@ ValidationFactory.make(
   { code: 'failed' },
 );
 
-if (validator.fails()) {
+if (await validator.fails()) {
   console.log(validator.getMessage());
 }
 
@@ -533,7 +534,7 @@ ValidationFactory.make(
   { code: 'failed' },
 );
 
-if (validator.fails()) {
+if (await validator.fails()) {
   console.log(validator.getMessage());
 }
 
@@ -562,9 +563,47 @@ ValidationFactory.make(
   { code: null },
 );
 
-if (validator.fails()) {
+if (await validator.fails()) {
   console.log(validator.getMessage());
 }
 
 // The log will be empty, because the code is nullable.
+```
+
+## Custom the unique rule
+
+```js
+import { ValidationRule } from '@noravel/validation';
+
+class UniqueRule extends ValidationRule {
+  constructor(table, column = 'id') {
+    super();
+    this.table = table;
+    this.column = column;
+  }
+
+  async validate(attribute, value, fail) {
+    const result = await db.all(`SELECT 1 FROM ${this.table} WHERE ${this.column} = ?`, [value]);
+    if (result.length > 0) {
+      fail(`The ${attribute} must be unique.`);
+    }
+  }
+}
+
+// Usage
+const validator = ValidationFactory.make(rules => ({
+  email: rules().addRule('email', new UniqueRule('users', 'email')),
+}), {
+  email: 'test@example.com',
+});
+
+if (await validator.fails()) {
+  console.log(validator.getMessage());
+}
+
+/*
+{
+  email: ['The email must be unique.'],
+}
+*/
 ```

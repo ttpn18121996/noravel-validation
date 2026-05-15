@@ -5,7 +5,7 @@ export default class CustomRule extends ValidationRule {
     super();
   }
 
-  public validate(attribute: string, value: any, fail: (message: string) => void): void {
+  public async validate(attribute: string, value: any, fail: (message: string) => void): Promise<void> {
     this.handler(attribute, value, fail);
   }
 }
